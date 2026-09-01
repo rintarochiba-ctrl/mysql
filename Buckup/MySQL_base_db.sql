@@ -232,3 +232,122 @@ UNLOCK TABLES;
 -- | 営業            |     1 |
 -- +-----------------+-------+
 
+
+--SQL課題2
+
+--**HAVING: グループ条件** 問題: 各jobごとの社員数を取得し、社員数が2人以上のjobだけを表示してください。
+-- mysql> SELECT job,COUNT(*) FROM employee GROUP BY job HAVING COUNT(*) >= 2;
+-- +-----------------+----------+
+-- | job             | COUNT(*) |
+-- +-----------------+----------+
+-- | エンジニア      |        2 |
+-- +-----------------+----------+
+
+--**INNER JOIN: テーブルの結合** 問題: employeeテーブルとdepartmentテーブルをdepartment_idで結合し、社員名と所属部署名を取得してください。
+-- mysql> SELECT employee.name, department.department_name
+--        FROM employee
+--        INNER JOIN department ON employee.department_id = department.id;
+-- +--------+-----------------+
+-- | name   | department_name |
+-- +--------+-----------------+
+-- | 松田   | 経営管理部      |
+-- | 山田   | 技術部          |
+-- | 佐藤   | 技術部          |
+-- | 鈴木   | 技術部          |
+-- +--------+-----------------+
+
+--**LEFT JOIN: 左結合** 問題: employeeテーブルのすべての社員と、その部署を左結合で取得してください。
+-- mysql> SELECT employee.name, department.department_name
+--        FROM employee
+--        LEFT JOIN department ON employee.department_id = department.id;
+-- +--------+-----------------+
+-- | name   | department_name |
+-- +--------+-----------------+
+-- | 松田   | 経営管理部      |
+-- | 山田   | 技術部          |
+-- | 佐藤   | 技術部          |
+-- | 鈴木   | 技術部          |
+-- | 佐藤   | NULL            |
+-- +--------+-----------------+
+
+-- **サブクエリ: 条件の入れ子** 問題: 月給が全社員の平均月給より高い社員を取得してください。
+-- mysql> SELECT * FROM employee WHERE sal > (SELECT AVG(sal) FROM employee);
+-- +----+--------+-----+--------+---------+---------------+
+-- | id | name   | age | job    | sal     | department_id |
+-- +----+--------+-----+--------+---------+---------------+
+-- |  1 | 松田   |  65 | 社長   | 1000000 |             1 |
+-- |  2 | 山田   |  43 | 部長   |  680000 |             2 |
+-- +----+--------+-----+--------+---------+---------------+
+
+-- **ORDER BYとLIMITの組み合わせ** 問題: employeeテーブルから月給の高い順に3人を取得してください。
+-- mysql> SELECT * FROM employee ORDER BY sal DESC LIMIT 3;
+-- +----+--------+-----+-----------------+---------+---------------+
+-- | id | name   | age | job             | sal     | department_id |
+-- +----+--------+-----+-----------------+---------+---------------+
+-- |  1 | 松田   |  65 | 社長            | 1000000 |             1 |
+-- |  2 | 山田   |  43 | 部長            |  680000 |             2 |
+-- |  5 | 鈴木   |  35 | エンジニア      |  550000 |             2 |
+-- +----+--------+-----+-----------------+---------+---------------+
+
+-- **ウィンドウ関数: 行番号の付与** 問題: employeeテーブルに対し、salの降順で行番号を付与して表示してください。
+-- mysql> SELECT name, sal, ROW_NUMBER() OVER (ORDER BY sal DESC) AS row_num FROM employee;
+-- mysql> SELECT name, sal, ROW_NUMBER() OVER (ORDER BY sal DESC) AS row_num FROM employee;
+-- +--------+---------+---------+
+-- | name   | sal     | row_num |
+-- +--------+---------+---------+
+-- | 松田   | 1000000 |       1 |
+-- | 山田   |  680000 |       2 |
+-- | 鈴木   |  550000 |       3 |
+-- | 佐藤   |  550000 |       4 |
+-- | 佐藤   |  500000 |       5 |
+-- +--------+---------+---------+
+
+-- **トランザクション: データ操作** 問題: 以下の操作をトランザクションで管理してください。
+--  社員山田の月給を50,000減額する。
+--  社員鈴木の月給を50,000増額する。
+-- mysql> start TRANSACTION ;
+-- UPDATE employee SET sal = sal-50000 WHERE name="山田";
+-- UPDATE employee SET sal = sal+50000 WHERE name="鈴木";
+-- mysql> commit;
+-- mysql> SELECT * FROM employee;
+-- +----+--------+-----+-----------------+---------+---------------+
+-- | id | name   | age | job             | sal     | department_id |
+-- +----+--------+-----+-----------------+---------+---------------+
+-- |  1 | 松田   |  65 | 社長            | 1000000 |             1 |
+-- |  2 | 山田   |  43 | 部長            |  630000 |             2 |
+-- |  4 | 佐藤   |  28 | エンジニア      |  500000 |             2 |
+-- |  5 | 鈴木   |  35 | エンジニア      |  600000 |             2 |
+-- |  6 | 佐藤   |  35 | 営業            |  550000 |          NULL |
+-- +----+--------+-----+-----------------+---------+---------------+
+
+-- **CASE文: 条件による値の変更** 問題: employeeテーブルのsalが600,000以上なら"高給", それ未満なら"普通"と表示してください。
+-- mysql> SELECT name,sal,CASE WHEN sal >= 600000 THEN "高給" ELSE "普通" END AS sal_category FROM employee;
+-- +--------+---------+--------------+
+-- | name   | sal     | sal_category |
+-- +--------+---------+--------------+
+-- | 松田   | 1000000 | 高給         |
+-- | 山田   |  630000 | 高給         |
+-- | 佐藤   |  500000 | 普通         |
+-- | 鈴木   |  600000 | 高給         |
+-- | 佐藤   |  550000 | 普通         |
+-- +--------+---------+--------------+
+
+-- **複雑なサブクエリ: 最大値の取得** 問題: 月給が各部署内で最大の社員を取得してください。
+-- mysql>  SELECT *
+--         FROM employee
+--         WHERE sal = (
+--           SELECT MAX(sal)
+--           FROM employee AS subquery
+--           WHERE subquery.department_id = employee.department_id
+--         );
+-- +----+--------+-----+--------+---------+---------------+
+-- | id | name   | age | job    | sal     | department_id |
+-- +----+--------+-----+--------+---------+---------------+
+-- |  1 | 松田   |  65 | 社長   | 1000000 |             1 |
+-- |  2 | 山田   |  43 | 部長   |  630000 |             2 |
+-- +----+--------+-----+--------+---------+---------------+
+-- 部署idが3の北條のデータは削除済みのため、表示されない。
+
+-- **FULL OUTER JOIN: 全結合** 問題: employeeテーブルとdepartmentテーブルを全結合し、どちらかに存在しないデータをNULLで補完して取得してください。
+-- mysql> SELECT * FROM employee FULL OUTER JOIN department ON employee.department_id = department.id;
+-- FULL OUTER JOINはMySQLではサポートされていないため、UNIONを使用して実現する。→今回は省略。
