@@ -68,6 +68,63 @@ INSERT INTO `employee` VALUES (1,'松田',65,'社長',1000000,1),(2,'山田',43,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `orders` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `quantity` int NOT NULL,
+  `order_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `orders`
+--
+
+LOCK TABLES `orders` WRITE;
+/*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,1,1,2,'2026-09-02 11:57:05','2026-09-02 11:57:05','2026-09-02 11:57:05'),(2,2,2,1,'2026-09-02 11:57:05','2026-09-02 11:57:05','2026-09-02 11:57:05'),(3,3,3,3,'2026-09-02 11:57:05','2026-09-02 11:57:05','2026-09-02 11:57:05');
+/*!40000 ALTER TABLE `orders` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `products`
+--
+
+DROP TABLE IF EXISTS `products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `products` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `price` int NOT NULL,
+  `stock` int NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `products`
+--
+
+LOCK TABLES `products` WRITE;
+/*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (1,'ノートパソコン',120000,20,'2026-09-02 12:03:00','2026-09-02 12:03:00'),(2,'スマートフォン',80000,15,'2026-09-02 12:03:00','2026-09-02 12:03:00'),(3,'タブレット',60000,30,'2026-09-02 12:03:00','2026-09-02 12:03:00');
+/*!40000 ALTER TABLE `products` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `project`
 --
 
@@ -93,6 +150,34 @@ LOCK TABLES `project` WRITE;
 INSERT INTO `project` VALUES (1,'新規開発プロジェクト',4),(3,'製品改善プロジェクト',5);
 /*!40000 ALTER TABLE `project` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'田中太郎','tanaka@example.com','2026-09-02 11:56:52','2026-09-02 11:56:52'),(2,'佐藤花子','sato@example.com','2026-09-02 11:56:52','2026-09-02 11:56:52'),(3,'山本次郎','yamamoto@example.com','2026-09-02 11:56:52','2026-09-02 11:56:52');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -103,4 +188,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-01 18:14:11
+-- Dump completed on 2026-09-02 15:18:25
