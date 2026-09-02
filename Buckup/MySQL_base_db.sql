@@ -332,13 +332,14 @@ UNLOCK TABLES;
 -- | 佐藤   |  550000 | 普通         |
 -- +--------+---------+--------------+
 
--- **複雑なサブクエリ: 最大値の取得** 問題: 月給が各部署内で最大の社員を取得してください。
--- mysql>  SELECT *
---         FROM employee
---         WHERE sal = (
+-- **複雑なサブクエリ: 最大値の取得** 問題: 月給が各部署内で最大の社員とその部署名を取得してください。
+-- mysql>  SELECT e.name, e.sal, d.department_name AS 部署名
+--         FROM employee AS e
+--         INNER JOIN department AS d ON e.department_id = d.id
+--         WHERE e.sal = (
 --           SELECT MAX(sal)
---           FROM employee AS subquery
---           WHERE subquery.department_id = employee.department_id
+--           FROM employee AS e
+--           WHERE e.department_id = d.id
 --         );
 -- +----+--------+-----+--------+---------+---------------+
 -- | id | name   | age | job    | sal     | department_id |
@@ -347,6 +348,21 @@ UNLOCK TABLES;
 -- |  2 | 山田   |  43 | 部長   |  630000 |             2 |
 -- +----+--------+-----+--------+---------+---------------+
 -- 部署idが3の北條のデータは削除済みのため、表示されない。
+--以下2パターン目
+-- SELECT e.name, e.sal, d.department_name AS 部署名
+-- FROM employee AS e
+-- JOIN department AS d ON e.department_id = d.id
+-- WHERE e.sal = (
+--   SELECT MAX(sal)
+--   FROM employee
+--   WHERE department_id = d.id
+-- );
+-- +--------+---------+-----------------+
+-- | name   | sal     | 部署名          |
+-- +--------+---------+-----------------+
+-- | 松田   | 1000000 | 経営管理部      |
+-- | 山田   |  630000 | 技術部          |
+-- +--------+---------+-----------------+
 
 -- **FULL OUTER JOIN: 全結合** 問題: employeeテーブルとdepartmentテーブルを全結合し、どちらかに存在しないデータをNULLで補完して取得してください。
 -- mysql> SELECT * FROM employee FULL OUTER JOIN department ON employee.department_id = department.id;
